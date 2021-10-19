@@ -192,7 +192,7 @@ def train(args, model, tokenizer):
         str(args.max_answer_length),
         str(args.max_query_length),
     )
-
+    cached_train_features_file = cached_train_features_file.replace("/", "_")
     try:
         with open(cached_train_features_file, "rb") as reader:
             train_features = pickle.load(reader)
