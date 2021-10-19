@@ -184,14 +184,15 @@ def train(args, model, tokenizer):
     """Load datas"""
     train_dataset = read_data(args, args.train_file)
 
-    cached_train_features_file = args.train_file + "_{0}_{1}_{2}_{3}_{4}".format(
+    cached_train_features_file = "{0}_{1}_{2}_{3}_{4}_{5}".format(
         args.model_name_or_path,
+        str(args.data_type),
         str(args.max_seq_length),
         str(args.doc_stride),
         str(args.max_answer_length),
         str(args.max_query_length),
     )
-    cached_train_features_file = cached_train_features_file.replace("/", "_")
+
     try:
         with open(cached_train_features_file, "rb") as reader:
             train_features = pickle.load(reader)
@@ -366,8 +367,9 @@ def train(args, model, tokenizer):
     # Init wandb
     wandb.init(
         project="seq2seq_QG",
-        name="{0}_{1}_{2}_{3}_{4}".format(
+        name="{0}_{1}_{2}_{3}_{4}_{5}".format(
             str(args.model_type),
+            str(args.data_type),
             str(args.max_seq_length),
             str(args.doc_stride),
             str(args.max_answer_length),
