@@ -12,11 +12,11 @@ python3 train_seq2seq_QG.py \
   --data_type SQuAD \
   --per_gpu_train_batch_size 25 \
   --learning_rate 5e-5 \
-  --num_train_epochs 10 \
+  --num_train_epochs 20 \
   --logging_steps 100 \
   --save_steps -1 \
   --output_dir bart_QG_SQuAD/ \
-  --warmup_steps 1000 
+  --warmup_steps 100 
 ```
 #### RACE
 ```
@@ -28,11 +28,11 @@ python3 train_seq2seq_QG.py \
   --data_type RACE \
   --per_gpu_train_batch_size 25 \
   --learning_rate 5e-5 \
-  --num_train_epochs 10 \
+  --num_train_epochs 20 \
   --logging_steps 100 \
   --save_steps -1 \
   --output_dir bart_QG_RACE/ \
-  --warmup_steps 1000 
+  --warmup_steps 100 
 ```
 
 ## evaluate
