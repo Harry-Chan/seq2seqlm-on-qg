@@ -283,8 +283,23 @@ def evaluate(args, model, tokenizer, beam_size=1):
                 }
             )
 
-            if len(predict_questions) > 0:
+            if len(predict_questions) > 0 and args.data_type == "RACE":
                 predict_questions_text += predict_questions[0] + "\n"
+                num += 1
+            elif len(predict_questions) > 0 and args.data_type == "SQuAD":
+                char_to_replace = {
+                    "?": " ?",
+                    ", ": " , ",
+                    "'s ": " 's ",
+                    "s' ": "s ' ",
+                    ' " ': '  "',
+                    ' "': " `` ",
+                    '" ': " '' ",
+                    '"': " '' ",
+                }
+                for key, value in char_to_replace.items():
+                    predict_questions[0] = predict_questions[0].replace(key, value)
+                predict_questions_text += predict_questions[0].lower() + "\n"
                 num += 1
             else:
                 predict_questions_text += "\n"
@@ -299,16 +314,16 @@ def evaluate(args, model, tokenizer, beam_size=1):
     )
 
     if "dev" in args.predict_file:
-        data_type = "dev"
+        file_type = "dev"
     elif "test" in args.predict_file:
-        data_type = "test"
+        file_type = "test"
     elif "train" in args.predict_file:
-        data_type = "train"
+        file_type = "train"
     else:
-        data_type = "eval"
+        file_type = "eval"
 
     output_file = os.path.join(
-        args.output_dir, "{0}_beam_size_{1}".format(str(data_type), str(beam_size))
+        args.output_dir, "{0}_beam_size_{1}".format(str(file_type), str(beam_size))
     )
 
     json.dump(res, open(output_file + ".json", "w"))
@@ -322,8 +337,12 @@ def evaluate(args, model, tokenizer, beam_size=1):
 def predict(args, model, tokenizer, features, beam_size=1):
 
     input_ids = torch.tensor([f.input_ids for f in features], dtype=torch.long)
-    attention_mask = torch.tensor([f.attention_mask for f in features], dtype=torch.long)
-    token_type_ids = torch.tensor([f.token_type_ids for f in features], dtype=torch.long)
+    attention_mask = torch.tensor(
+        [f.attention_mask for f in features], dtype=torch.long
+    )
+    token_type_ids = torch.tensor(
+        [f.token_type_ids for f in features], dtype=torch.long
+    )
 
     input_ids = input_ids.to(args.device)
     attention_mask = attention_mask.to(args.device)
