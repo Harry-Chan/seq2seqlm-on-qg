@@ -151,7 +151,7 @@ def convert_data_to_features(args, datas, tokenizer):
                     "input_mask: %s" % " ".join([str(x) for x in attention_mask])
                 )
                 logger.info("label_ids: %s" % " ".join([str(x) for x in label_ids]))
-            input()
+
             features.append(
                 InputFeatures(
                     input_ids=input_ids,
@@ -167,7 +167,7 @@ def convert_data_to_features(args, datas, tokenizer):
             # continue
 
     print("num_data:", num)
-    input()
+
     return features
 
 
