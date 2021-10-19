@@ -34,3 +34,29 @@ python3 train_seq2seq_QG.py \
   --output_dir bart_QG_RACE/ \
   --warmup_steps 1000 
 ```
+
+## evaluate
+
+### Seq2Seq QG
+#### SQuAD
+```
+python3 predict_seq2seq_QG.py \
+  --model_type bart \
+  --model_name_or_path bart_QG_SQuAD/ \
+  --eval_batch_size 8 \
+  --beam_size 3 \
+  --output_dir bart_QG_SQuAD/ \
+  --predict_file data/squad_v1.1/unilm_test_keywords.json \
+  --data_type SQuAD
+```
+#### RACE
+```
+python3 predict_seq2seq_QG.py \
+  --model_type bart \
+  --model_name_or_path bart_QG_RACE/ \
+  --eval_batch_size 8 \
+  --beam_size 3 \
+  --output_dir bart_QG_RACE/ \
+  --predict_file data/race/race_test_keywords.json \
+  --data_type RACE
+```
