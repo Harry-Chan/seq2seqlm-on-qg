@@ -2,7 +2,6 @@ import json
 import argparse
 import os
 import random
-from copy import deepcopy
 import logging
 import pickle
 from tqdm import tqdm, trange
@@ -20,7 +19,7 @@ import transformers
 from transformers import (
     AdamW,
     get_linear_schedule_with_warmup,
-    AutoModelForMaskedLM,
+    AutoModelForSeq2SeqLM,
     AutoConfig,
     AutoTokenizer,
 )
@@ -37,7 +36,7 @@ class Data(object):
         self.context = context
         self.question = question
         self.answer = answer
-
+        self.answer_start = answer_start
 
 class InputFeatures(object):
     def __init__(self, input_ids, token_type_ids, attention_mask, labels):
@@ -770,7 +769,7 @@ def main():
         cache_dir=args.cache_dir if args.cache_dir else None,
         use_fast=False,  # SquadDataset is not compatible with Fast tokenizers which have a smarter overflow handeling
     )
-    model = AutoModelForMaskedLM.from_pretrained(
+    model = AutoModelForSeq2SeqLM.from_pretrained(
         args.model_name_or_path,
         from_tf=bool(".ckpt" in args.model_name_or_path),
         config=config,
