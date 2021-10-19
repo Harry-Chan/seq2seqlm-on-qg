@@ -169,8 +169,7 @@ def evaluate(args, model, tokenizer, beam_size=1):
     """ Load datas """
     eval_dataset = read_data(args, path=args.predict_file)
 
-    cached_eval_features_file = "eval_{0}_{1}_{2}_{3}_{4}_{5}".format(
-        args.model_name_or_path,
+    cached_eval_features_file = "eval_{0}_{1}_{2}_{3}_{4}".format(
         str(args.data_type),
         str(args.max_seq_length),
         str(args.doc_stride),
