@@ -286,6 +286,7 @@ def evaluate(args, model, tokenizer, beam_size=1):
                 predict_questions_text += predict_questions[0] + "\n"
                 num += 1
             elif len(predict_questions) > 0 and args.data_type == "SQuAD":
+                # for nqg-tgt type
                 char_to_replace = {
                     "?": " ?",
                     ", ": " , ",
@@ -297,8 +298,8 @@ def evaluate(args, model, tokenizer, beam_size=1):
                     '"': " '' ",
                 }
                 for key, value in char_to_replace.items():
-                    predict_questions[0] = predict_questions[0].replace(key, value)
-                predict_questions_text += predict_questions[0].lower() + "\n"
+                    nqg_type_q = predict_questions[0].replace(key, value)
+                predict_questions_text += nqg_type_q.lower() + "\n"
                 num += 1
             else:
                 predict_questions_text += "\n"
@@ -325,12 +326,19 @@ def evaluate(args, model, tokenizer, beam_size=1):
         args.output_dir, "{0}_beam_size_{1}".format(str(file_type), str(beam_size))
     )
 
+    for org_data, q in zip(eval_dataset, res):
+        if org_data.question == res["ground_truth"]:
+            q["context"] = org_data.context
+            q["answer"] = org_data.answer
+
     json.dump(res, open(output_file + ".json", "w"))
     with open(output_file + ".txt", "w") as file:
         file.write(predict_questions_text.strip())
 
     global error_len
-    print(error_len)
+    print("error_context_len", error_len)
+
+    return num
 
 
 def predict(args, model, tokenizer, features, beam_size=1):
@@ -516,7 +524,10 @@ def main():
     model.eval()
 
     if args.predict_file != None:
-        evaluate(args, model=model, tokenizer=tokenizer, beam_size=args.beam_size)
+        num_success = evaluate(
+            args, model=model, tokenizer=tokenizer, beam_size=args.beam_size
+        )
+        print('num_success', num_success)
     else:
         while 1:
             context = input("context: ")
