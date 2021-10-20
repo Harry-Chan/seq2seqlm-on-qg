@@ -38,6 +38,7 @@ class Data(object):
         self.answer = answer
         self.answer_start = answer_start
 
+
 class InputFeatures(object):
     def __init__(self, input_ids, token_type_ids, attention_mask, labels):
         self.input_ids = input_ids
@@ -267,7 +268,7 @@ def train(args, model, tokenizer):
         optimizer_grouped_parameters, lr=args.learning_rate, eps=args.adam_epsilon
     )
     scheduler = get_linear_schedule_with_warmup(
-        optimizer, num_warmup_steps=args.warmup_steps, num_training_steps=t_total
+        optimizer, num_warmup_steps=t_total * 0.05, num_training_steps=t_total
     )
 
     # Check if saved optimizer or scheduler states exist
@@ -640,9 +641,6 @@ def main():
         default=-1,
         type=int,
         help="If > 0: set total number of training steps to perform. Override num_train_epochs.",
-    )
-    parser.add_argument(
-        "--warmup_steps", default=0, type=int, help="Linear warmup over warmup_steps."
     )
     parser.add_argument(
         "--lang_id",
