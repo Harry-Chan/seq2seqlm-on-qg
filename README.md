@@ -69,7 +69,7 @@ python3 setup_scorer.py
 ```
 ### Evaluate on SQuAD
 ```
-nlg-eval --hypothesis=bart_QG_SQuAD/epoch-19/test_beam_size_3.txt --references=data/suqad_v1.1/nqg_tgt-test.txt --no-skipthoughts  --no-glove
+nlg-eval --hypothesis=bart_QG_SQuAD/epoch-19/test_beam_size_3.txt --references=data/squad_v1.1/nqg_tgt-test.txt --no-skipthoughts  --no-glove
 ```
 
 ### Evaluate on RACE
