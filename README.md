@@ -35,17 +35,17 @@ python3 train_seq2seq_QG.py \
   --warmup_steps 100 
 ```
 
-## evaluate
+## Generating
 
 ### Seq2Seq QG
 #### SQuAD
 ```
 python3 predict_seq2seq_QG.py \
   --model_type bart \
-  --model_name_or_path bart_QG_SQuAD/ \
+  --model_name_or_path bart_QG_SQuAD/epoch-19/ \
   --eval_batch_size 8 \
   --beam_size 3 \
-  --output_dir bart_QG_SQuAD/ \
+  --output_dir bart_QG_SQuAD/epoch-19/ \
   --predict_file data/squad_v1.1/unilm_test_keywords.json \
   --data_type SQuAD
 ```
@@ -53,10 +53,23 @@ python3 predict_seq2seq_QG.py \
 ```
 python3 predict_seq2seq_QG.py \
   --model_type bart \
-  --model_name_or_path bart_QG_RACE/ \
+  --model_name_or_path bart_QG_RACE/epoch-19/ \
   --eval_batch_size 8 \
   --beam_size 3 \
-  --output_dir bart_QG_RACE/ \
+  --output_dir bart_QG_RACE/epoch-19/ \
   --predict_file data/race/race_test_keywords.json \
   --data_type RACE
+```
+
+## Evaluation
+Based on the package [`nlg-eval`](https://github.com/Maluuba/nlg-eval).
+
+### using on SQuAD
+```
+nlg-eval --hypothesis=bart_QG_SQuAD/epoch-19/test_beam_size_3.txt --references=data/suqad_v1.1/nqg_tgt-test.txt
+```
+
+### using on RACE
+```
+nlg-eval --hypothesis=bart_QG_RACE/epoch-19/test_beam_size_3.txt --references=data/race/race_text_q.txt
 ```
