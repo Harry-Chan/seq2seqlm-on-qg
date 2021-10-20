@@ -11,7 +11,7 @@ python3 train_seq2seq_QG.py \
   --train_file data/squad_v1.1/unilm_train_keywords.json \
   --data_type SQuAD \
   --per_gpu_train_batch_size 25 \
-  --learning_rate 6e-5 \
+  --learning_rate 5e-5 \
   --num_train_epochs 20 \
   --logging_steps 100 \
   --save_steps -1 \
@@ -26,7 +26,7 @@ python3 train_seq2seq_QG.py \
   --train_file data/race/race_train_keywords_17445.json \
   --data_type RACE \
   --per_gpu_train_batch_size 25 \
-  --learning_rate 6e-5 \
+  --learning_rate 5e-5 \
   --num_train_epochs 20 \
   --logging_steps 100 \
   --save_steps -1 \
