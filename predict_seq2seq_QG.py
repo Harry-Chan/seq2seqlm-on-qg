@@ -1,20 +1,15 @@
 import json
 import argparse
 import os
-from copy import deepcopy
 import logging
-from typing import Tuple
 from tqdm import tqdm
 import timeit
 import pickle
 
 import torch
-import torch.nn.functional as F
 from torch.utils.data import TensorDataset, DataLoader
 
-import transformers
 from transformers import AutoModelForSeq2SeqLM, AutoConfig, AutoTokenizer
-from transformers.trainer_utils import is_main_process
 
 
 logger = logging.getLogger(__name__)
@@ -287,6 +282,7 @@ def evaluate(args, model, tokenizer, beam_size=1):
                 num += 1
             elif len(predict_questions) > 0 and args.data_type == "SQuAD":
                 # for nqg-tgt type
+                nqg_type_q = predict_questions[0]
                 char_to_replace = {
                     "?": " ?",
                     ", ": " , ",
@@ -298,7 +294,7 @@ def evaluate(args, model, tokenizer, beam_size=1):
                     '"': " '' ",
                 }
                 for key, value in char_to_replace.items():
-                    nqg_type_q = predict_questions[0].replace(key, value)
+                    nqg_type_q = nqg_type_q.replace(key, value)
                 predict_questions_text += nqg_type_q.lower() + "\n"
                 num += 1
             else:
