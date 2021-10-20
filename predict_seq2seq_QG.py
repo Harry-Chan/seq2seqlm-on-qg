@@ -327,7 +327,7 @@ def evaluate(args, model, tokenizer, beam_size=1):
     )
 
     for org_data, q in zip(eval_dataset, res):
-        if org_data.question == res["ground_truth"]:
+        if org_data.question == q["ground_truth"]:
             q["context"] = org_data.context
             q["answer"] = org_data.answer
 
@@ -527,7 +527,7 @@ def main():
         num_success = evaluate(
             args, model=model, tokenizer=tokenizer, beam_size=args.beam_size
         )
-        print('num_success', num_success)
+        print("num_success", num_success)
     else:
         while 1:
             context = input("context: ")
