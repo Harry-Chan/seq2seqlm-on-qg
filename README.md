@@ -65,19 +65,14 @@ python3 predict_seq2seq_QG.py \
 Based on the package [`nlg-eval`](https://github.com/Maluuba/nlg-eval).
 ### install package
 ```
-nlg-eval --setup
+python3 setup_scorer.py
 ```
-### install java jdk
+### Evaluate on SQuAD
 ```
-sudo apt-get update
-sudo apt-get install default-jdk -y
-```
-### using on SQuAD
-```
-nlg-eval --hypothesis=bart_QG_SQuAD/epoch-19/test_beam_size_3.txt --references=data/suqad_v1.1/nqg_tgt-test.txt
+nlg-eval --hypothesis=bart_QG_SQuAD/epoch-19/test_beam_size_3.txt --references=data/suqad_v1.1/nqg_tgt-test.txt --no-skipthoughts  --no-glove
 ```
 
-### using on RACE
+### Evaluate on RACE
 ```
-nlg-eval --hypothesis=bart_QG_RACE/epoch-19/test_beam_size_3.txt --references=data/race/race_text_q.txt
+nlg-eval --hypothesis=bart_QG_RACE/epoch-19/test_beam_size_3.txt --references=data/race/race_test_q.txt --no-skipthoughts  --no-glove
 ```

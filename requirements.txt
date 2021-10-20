@@ -4,3 +4,4 @@ accelerate
 pytorch-lightning
 wandb
 git+https://github.com/Maluuba/nlg-eval.git@master
+stanza
