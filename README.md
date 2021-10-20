@@ -63,7 +63,15 @@ python3 predict_seq2seq_QG.py \
 
 ## Evaluation
 Based on the package [`nlg-eval`](https://github.com/Maluuba/nlg-eval).
-
+### install package
+```
+nlg-eval --setup
+```
+### install java jdk
+```
+sudo apt-get update
+sudo apt-get install default-jdk -y
+```
 ### using on SQuAD
 ```
 nlg-eval --hypothesis=bart_QG_SQuAD/epoch-19/test_beam_size_3.txt --references=data/suqad_v1.1/nqg_tgt-test.txt
