@@ -156,29 +156,44 @@ class RaceQGDataset(Dataset, DatasetUtilsMixin):
             split_set(str): `train` or `validation`
             tokenizer(transformers.PreTrainedTokenizer)
         """
-        dataset = load_dataset("squad")
+        if split_set == "train":
+            with open(args.train_file, "r", encoding="utf-8") as f_train:
+                train_set = json.load(f_train)
+                self.data = train_set
+        elif split_set == "dev":
+            with open(args.dev_file, "r", encoding="utf-8") as f_dev:
+                dev_set = json.load(f_dev)
+                self.data = dev_set
+        elif split_set == "test":
+            with open(args.predict_file, "r", encoding="utf-8") as f_test:
+                test_set = json.load(f_test)
+                self.data = test_set
+
         self.split_set = split_set
         self.is_test = is_test
-        self.data = dataset[split_set]
+        self.data = self.data
         self.tokenizer = tokenizer
 
     def __getitem__(self, index):
         data = self.data[index]
-
-        answer_text = data["answers"]
-        answer_len = len(answer_text)
-        answer_start = data["answers"]["answer_start"][0]
-        hl_context = (
-            data["context"][:answer_start]
-            + HL_TOKEN
-            + answer_text
-            + HL_TOKEN
-            + data["context"][answer_start + answer_len :]
+        # answer_text = data["answers"][0]["text"]
+        # answer_len = len(answer_text)
+        # answer_start = data["answers"][0]["answer_start"]
+        # hl_context = (
+        #     data["context"][:answer_start]
+        #     + HL_TOKEN
+        #     + answer_text
+        #     + HL_TOKEN
+        #     + data["context"][answer_start + answer_len :]
+        # )
+        context = (
+            data["context"]
+            + self.tokenizer.sep_token
+            + data["answer"]
         )
-
         if self.is_test == False:
             model_input = self.prepare_input(
-                context=hl_context, label=data["question"] + self.tokenizer.eos_token
+                context=context, label=data["question"] + self.tokenizer.eos_token
             )
             return (
                 model_input["input_ids"],
@@ -186,7 +201,7 @@ class RaceQGDataset(Dataset, DatasetUtilsMixin):
                 model_input["labels"],
             )
         else:
-            model_input = self.prepare_input(context=hl_context)
+            model_input = self.prepare_input(context=context)
             return (
                 model_input["input_ids"],
                 model_input["attention_mask"],
