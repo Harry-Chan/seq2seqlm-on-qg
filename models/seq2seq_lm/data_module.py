@@ -22,6 +22,10 @@ class DataModule(pl.LightningDataModule):
             self.train_dataset = RaceQGDataset(split_set="train")
             self.dev_dataset = RaceQGDataset(split_set="dev")
             self.test_dataset = RaceQGDataset(split_set="test", is_test=True)
+        elif args.data_type == "drcd":
+            self.train_dataset = DrcdQGDataset(split_set="train")
+            self.dev_dataset = DrcdQGDataset(split_set="dev")
+            self.test_dataset = DrcdQGDataset(split_set="test", is_test=True)
 
     def train_dataloader(self):
         return DataLoader(self.train_dataset, batch_size=self.batch_size, shuffle=True)
@@ -197,6 +201,70 @@ class RaceQGDataset(Dataset, DatasetUtilsMixin):
             )
         else:
             model_input = self.prepare_input(context=context)
+            return (
+                model_input["input_ids"],
+                model_input["attention_mask"],
+                data["question"],
+            )
+
+    def __len__(self):
+        return len(self.data)
+
+
+class DrcdQGDataset(Dataset, DatasetUtilsMixin):
+    def __init__(
+        self,
+        split_set: str = "train",
+        tokenizer=get_tokenizer(args.model_name_or_path),
+        is_test=False,
+    ):
+        """
+        Args:
+            split_set(str): `train` or `validation`
+            tokenizer(transformers.PreTrainedTokenizer)
+        """
+        if split_set == "train":
+            with open(args.train_file, "r", encoding="utf-8") as f_train:
+                train_set = json.load(f_train)
+                self.data = train_set
+        elif split_set == "dev":
+            with open(args.dev_file, "r", encoding="utf-8") as f_dev:
+                dev_set = json.load(f_dev)
+                self.data = dev_set
+        elif split_set == "test":
+            with open(args.predict_file, "r", encoding="utf-8") as f_test:
+                test_set = json.load(f_test)
+                self.data = test_set
+
+        self.split_set = split_set
+        self.is_test = is_test
+        self.data = self.data
+        self.tokenizer = tokenizer
+
+    def __getitem__(self, index):
+        data = self.data[index]
+
+        answer_text = data["answers"]
+        answer_len = len(answer_text)
+        answer_start = data["answer_start"]
+        hl_context = (
+            data["context"][:answer_start]
+            + HL_TOKEN
+            + answer_text
+            + HL_TOKEN
+            + data["context"][answer_start + answer_len :]
+        )
+        if self.is_test == False:
+            model_input = self.prepare_input(
+                context=hl_context, label=data["question"] + self.tokenizer.eos_token
+            )
+            return (
+                model_input["input_ids"],
+                model_input["attention_mask"],
+                model_input["labels"],
+            )
+        else:
+            model_input = self.prepare_input(context=hl_context)
             return (
                 model_input["input_ids"],
                 model_input["attention_mask"],

@@ -6,20 +6,9 @@ import torch
 from utils.scorer import ModelEvalMixin
 from utils.server import ServerMixin
 from utils.scheduler import setup_scheduler, step_scheduler
-import wandb
+
 
 args = get_args()
-
-# Init wandb
-wandb.init(
-    project=args.task_name,
-    name="{0}_{1}_{2}_{3}".format(
-        args.model_name_or_path,
-        args.data_type,
-        str(args.max_input_length),
-        str(args.max_output_length),
-    ),
-)
 
 
 class Model(pl.LightningModule, ModelEvalMixin, ServerMixin):
@@ -47,18 +36,15 @@ class Model(pl.LightningModule, ModelEvalMixin, ServerMixin):
         outputs = self(batch[0], batch[1], batch[2])
         loss = outputs["loss"]
         self.log("train_loss", loss)
-        if batch_idx % args.wandb_logging_steps == 0:
-            wandb.log({"train_loss": loss})
-            wandb.log({"step": batch_idx})
+        self.log("global_step", self.global_step)
+
         return loss
 
     def validation_step(self, batch, batch_idx):
         outputs = self(batch[0], batch[1], batch[2])
         loss = outputs["loss"]
         self.log("dev_loss", loss, prog_bar=True)
-        if batch_idx % args.wandb_logging_steps == 0:
-            wandb.log({"dev_loss": loss})
-            wandb.log({"dev_step": batch_idx})
+        self.log("global_step", self.global_step)
         return loss
 
     def test_step(self, batch, batch_idx):

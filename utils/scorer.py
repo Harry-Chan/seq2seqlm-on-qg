@@ -71,6 +71,30 @@ class ModelEvalMixin:
                 decode_question = decode_question.replace("'s", " 's")
                 decode_question = decode_question.replace("n't", " n't")
                 log_f.write(decode_question + "\n")
+        elif data_type == "drcd":
+            # rewrite for drcd type
+            with open(
+                os.path.join(log_dir, "predict_for_scorer.txt"),
+                "a",
+                encoding="utf-8",
+            ) as log_f:
+                # replace string: 台灣哪一行政區的月均最高與最低氣溫相差21.2度？ -> 台 灣 哪 一 行 政 區 的 月 均 最 高 與 最 低 氣 溫 相 差 21.2 度 ？
+                pattern = re.compile(u"[\u4e00-\u9fa5]+")
+                rewrite_question = ""
+                preflag = False
+                for c in decode_question:
+                    if pattern.search(c) == None and preflag == True:
+                        preflag = True
+                        rewrite_question += c
+                    elif pattern.search(c) == None:
+                        preflag = True
+                        rewrite_question += " " + c
+                    elif c == "？":
+                        rewrite_question += " " + c
+                    else:
+                        preflag = False
+                        rewrite_question += " " + c
+                log_f.write(rewrite_question + "\n")
 
     def evaluate_predict(self, data_type):
 
@@ -105,7 +129,11 @@ class ModelEvalMixin:
                 "nlg-eval --references=data/race_eqg/race_test_q.txt  --hypothesis=%s  --no-skipthoughts  --no-glove >> %s"
                 % (nlg_predict_file_path, nlg_predict_score_out_path)
             )
-
+        elif data_type == "drcd":
+            os.system(
+                "nlg-eval --references=data/drcd/drcd_test_q.txt  --hypothesis=%s  --no-skipthoughts  --no-glove >> %s"
+                % (nlg_predict_file_path, nlg_predict_score_out_path)
+            )
         # nqg scorer
         assert os.path.isdir(
             "nqg"
@@ -122,7 +150,11 @@ class ModelEvalMixin:
                 "python nqg/qgevalcap/eval.py --src data/race_eqg/race_test_q.txt --tgt data/race_eqg/race_test_q.txt --out %s >> %s"
                 % (nqg_predict_file_path, nqg_predict_score_out_path)
             )
-
+        elif data_type == "race":
+            os.system(
+                "python nqg/qgevalcap/eval.py --src data/drcd/drcd_test_q.txt --tgt data/drcd/drcd_test_q.txt --out %s >> %s"
+                % (nqg_predict_file_path, nqg_predict_score_out_path)
+            )
         print("see log_dir:`%s` for full report" % log_dir)
 
     def save_huggingface_model(self):

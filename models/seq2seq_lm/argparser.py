@@ -12,6 +12,8 @@ def get_args():
             "t5-small",
             "t5-base",
             "t5-large",
+            "fnlp/bart-base-chinese",
+            "uer/bart-base-chinese-cluecorpussmall",
         ],
         type=str,
     )
@@ -22,7 +24,7 @@ def get_args():
         help="The output directory where the model checkpoints and predictions will be written.",
     )
     parser.add_argument(
-        "--data_type", default="squad", choices=["squad", "race"], type=str
+        "--data_type", default="squad", choices=["squad", "race", "drcd"], type=str
     )
     parser.add_argument(
         "--train_file", default="None", type=str, help="The input training file."

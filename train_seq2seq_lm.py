@@ -5,7 +5,9 @@ from models.seq2seq_lm.model import Model
 from models.seq2seq_lm.data_module import DataModule
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 from pytorch_lightning.callbacks import ModelCheckpoint
+from pytorch_lightning.loggers import WandbLogger
 from models.seq2seq_lm.config import GPUS, ACCELERATOR
+import wandb
 from loguru import logger
 
 args = argparser.get_args()
@@ -23,6 +25,17 @@ if __name__ == "__main__":
         model.run_server()
         exit()
 
+    # init wandb
+    wandb_logger = WandbLogger(
+        project=args.task_name,
+        name="{0}_{1}_{2}_{3}".format(
+            args.model_name_or_path,
+            args.data_type,
+            str(args.max_input_length),
+            str(args.max_output_length),
+        ),
+    )
+
     # trainer config
     trainer = pl.Trainer(
         gpus=GPUS,
@@ -31,6 +44,8 @@ if __name__ == "__main__":
         precision=32,
         default_root_dir=args.output_dir,
         max_epochs=args.epoch,
+        logger=wandb_logger,
+        log_every_n_steps=args.wandb_logging_steps,
         callbacks=[
             EarlyStopping(monitor="dev_loss", patience=5, mode="min"),
             ModelCheckpoint(
@@ -70,3 +85,5 @@ if __name__ == "__main__":
             datamodule=dm,
             ckpt_path=testing_use_model_path,
         )
+        
+    wandb.finish()
