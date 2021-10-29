@@ -12,10 +12,6 @@ def get_args():
             "t5-small",
             "t5-base",
             "t5-large",
-            "p208p2002/bart-squad-qg-hl",
-            "p208p2002/bart-squad-nqg-hl",
-            "p208p2002/t5-squad-qg-hl",
-            "p208p2002/t5-squad-nqg-hl",
         ],
         type=str,
     )
@@ -45,7 +41,16 @@ def get_args():
         type=int,
         help="Batch size for training/testing.",
     )
+    parser.add_argument("--max_input_length", type=int, default=1024)
+    parser.add_argument("--max_output_length", type=int, default=128)
     parser.add_argument("--lr", type=float, default=5e-6)
+    parser.add_argument("--beam_size", type=int, default=3)
+    parser.add_argument(
+        "--wandb_logging_steps",
+        type=int,
+        default=500,
+        help="Log every X updates steps.",
+    )
     parser.add_argument("--dev", type=int, default=0)
     parser.add_argument("--server", action="store_true")
     parser.add_argument("--run_test", action="store_true")

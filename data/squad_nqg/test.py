@@ -16,4 +16,4 @@ print(len(data))
 #     input()
 
 
-json.dump(data[:100], open("train_keywords_100.json", "w"))
+# json.dump(data[:100], open("train_keywords_100.json", "w"))

@@ -1,11 +1,9 @@
-from torch.utils.data import DataLoader, Dataset, ConcatDataset
-import os
+from torch.utils.data import DataLoader, Dataset
 import json
 from .tokenizer import get_tokenizer
 from .argparser import get_args
 import pytorch_lightning as pl
-from datasets import load_dataset
-from .config import MODEL_CONFIG, MAX_INPUT_LENGTH, MAX_QUESTION_LENGTH, HL_TOKEN
+from .config import HL_TOKEN
 import torch
 
 args = get_args()
@@ -42,7 +40,7 @@ class DatasetUtilsMixin:
         input_encodings = tokenizer(
             context,
             padding="max_length" if label is not None else False,
-            max_length=MAX_INPUT_LENGTH,
+            max_length=args.max_input_length,
             truncation=True,
             add_special_tokens=False,
         )
@@ -52,7 +50,7 @@ class DatasetUtilsMixin:
             target_encodings = tokenizer(
                 label,
                 padding="max_length",
-                max_length=MAX_QUESTION_LENGTH,
+                max_length=args.max_output_length,
                 truncation=True,
                 add_special_tokens=False,
             )
@@ -60,11 +58,10 @@ class DatasetUtilsMixin:
                 if target_encoding_id != pad_token_id:
                     labels.append(target_encoding_id)
                 else:
-                    labels.append(-100)
+                    labels.append(-100)  # CrossEntropyLoss ignore_index
         else:
             labels = None
 
-        #
         model_input = {
             "input_ids": input_encodings["input_ids"],
             "attention_mask": input_encodings["attention_mask"],
@@ -187,9 +184,7 @@ class RaceQGDataset(Dataset, DatasetUtilsMixin):
         #     + data["context"][answer_start + answer_len :]
         # )
         context = (
-            data["context"]
-            + self.tokenizer.sep_token
-            + data["answer"]
+            data["context"] + " " + self.tokenizer.sep_token + " " + data["answer"]
         )
         if self.is_test == False:
             model_input = self.prepare_input(

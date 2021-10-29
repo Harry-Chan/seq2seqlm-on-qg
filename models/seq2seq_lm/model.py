@@ -3,8 +3,7 @@ from transformers import AutoModelForSeq2SeqLM
 from .tokenizer import get_tokenizer
 from .argparser import get_args
 import torch
-from .config import MAX_INPUT_LENGTH, MAX_QUESTION_LENGTH
-from utils import ModelEvalMixin
+from utils.scorer import ModelEvalMixin
 from utils.server import ServerMixin
 from utils.scheduler import setup_scheduler, step_scheduler
 import wandb
@@ -12,15 +11,15 @@ import wandb
 args = get_args()
 
 # Init wandb
-# wandb.init(
-#     project=args.task_name,
-#     name="{0}_{1}_{2}_{3}".format(
-#         args.model_name_or_path,
-#         args.data_type,
-#         str(MAX_INPUT_LENGTH),
-#         str(MAX_QUESTION_LENGTH),
-#     ),
-# )
+wandb.init(
+    project=args.task_name,
+    name="{0}_{1}_{2}_{3}".format(
+        args.model_name_or_path,
+        args.data_type,
+        str(args.max_input_length),
+        str(args.max_output_length),
+    ),
+)
 
 
 class Model(pl.LightningModule, ModelEvalMixin, ServerMixin):
@@ -47,15 +46,20 @@ class Model(pl.LightningModule, ModelEvalMixin, ServerMixin):
     def training_step(self, batch, batch_idx):
         outputs = self(batch[0], batch[1], batch[2])
         loss = outputs["loss"]
-        self.log("train_loss", loss, prog_bar=True)
-        # wandb.log({"train_loss": loss})
+        self.log("train_loss", loss)
+        if batch_idx % args.wandb_logging_steps == 0:
+            wandb.log({"train_loss": loss})
+            wandb.log({"step": batch_idx})
         return loss
 
     def validation_step(self, batch, batch_idx):
         outputs = self(batch[0], batch[1], batch[2])
         loss = outputs["loss"]
         self.log("dev_loss", loss, prog_bar=True)
-        # wandb.log({"dev_loss": loss})
+        if batch_idx % args.wandb_logging_steps == 0:
+            wandb.log({"dev_loss": loss})
+            wandb.log({"dev_step": batch_idx})
+        return loss
 
     def test_step(self, batch, batch_idx):
         input_ids = batch[0]
@@ -69,13 +73,13 @@ class Model(pl.LightningModule, ModelEvalMixin, ServerMixin):
         sample_outputs = self.model.generate(
             input_ids=input_ids,
             attention_mask=attention_mask,
-            max_length=MAX_INPUT_LENGTH,
+            max_length=args.max_input_length,
             early_stopping=True,
             temperature=0.85,
             do_sample=True,
             top_p=0.9,
             top_k=10,
-            num_beams=3,
+            num_beams=args.beam_size,
             no_repeat_ngram_size=5,
             num_return_sequences=num_return_sequences,
         )
@@ -83,10 +87,10 @@ class Model(pl.LightningModule, ModelEvalMixin, ServerMixin):
         assert len(sample_outputs) == num_return_sequences  # 1
         sample_output = sample_outputs[0]
         decode_question = self.tokenizer.decode(sample_output, skip_special_tokens=True)
-        self.write_predict(decode_question, ref_question)
+        self.write_predict(decode_question, ref_question, args.data_type)
 
     def test_epoch_end(self, outputs):
-        self.evaluate_predict(dataset=args.data_type)
+        self.evaluate_predict(data_type=args.data_type)
         self.save_huggingface_model()
 
     @setup_scheduler
