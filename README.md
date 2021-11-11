@@ -8,11 +8,11 @@ python3 train_seq2seq_lm.py \
   --model_name_or_path facebook/bart-base \
   --data_type squad \
   --task_name  seq2seq_QG \
-  --train_file data/squad_nqg/train_keywords.json \
-  --dev_file data/squad_nqg/test_keywords.json \
-  --predict_file data/squad_nqg/test_keywords.json \
+  --train_file data/squad_nqg/train.json \
+  --dev_file data/squad_nqg/test.json \
+  --predict_file data/squad_nqg/test.json \
   --batch_size 24 \
-  --epoch 20 \
+  --epoch 10 \
   --lr 5e-5 \
   --output_dir squad_QG_seq2seq/ \
   --wandb_logging_steps  100
@@ -23,9 +23,9 @@ python3 train_seq2seq_lm.py \
   --model_name_or_path facebook/bart-base \
   --data_type race \
   --task_name  seq2seq_QG \
-  --train_file data/race_eqg/train_keywords.json \
-  --dev_file data/race_eqg/test_keywords.json \
-  --predict_file data/race_eqg/test_keywords.json \
+  --train_file data/race_eqg/train.json \
+  --dev_file data/race_eqg/test.json \
+  --predict_file data/race_eqg/test.json \
   --batch_size 24 \
   --epoch 20 \
   --lr 5e-5 \
@@ -54,7 +54,7 @@ python3 train_seq2seq_lm.py \
   --model_name_or_path facebook/bart-base \
   --data_type squad \
   --task_name seq2seq_QG \
-  --predict_file data/squad_nqg/test_keywords.json \
+  --predict_file data/squad_nqg/test.json \
   --output_dir squad_QG_seq2seq \
   --run_test \
   --from_checkpoint squad_QG_seq2seq/checkpoint/
@@ -66,7 +66,7 @@ python3 train_seq2seq_lm.py \
   --model_name_or_path facebook/bart-base \
   --data_type race \
   --task_name  seq2seq_QG \
-  --predict_file data/race_eqg/test_keywords.json \
+  --predict_file data/race_eqg/test.json \
   --output_dir race_QG_seq2seq \
   --run_test \
   --from_checkpoint race_QG_seq2seq/checkpoint/
