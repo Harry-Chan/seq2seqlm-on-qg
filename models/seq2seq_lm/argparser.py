@@ -53,6 +53,9 @@ def get_args():
         default=500,
         help="Log every X updates steps.",
     )
+    parser.add_argument(
+        "--weight_decay", default=0.0, type=float, help="Weight decay if we apply some."
+    )
     parser.add_argument("--dev", type=int, default=0)
     parser.add_argument("--server", action="store_true")
     parser.add_argument("--run_test", action="store_true")

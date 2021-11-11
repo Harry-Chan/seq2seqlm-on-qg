@@ -15,16 +15,19 @@ class DataModule(pl.LightningDataModule):
         self.batch_size = args.batch_size
 
         if args.data_type == "squad":
-            self.train_dataset = SquadQGDataset(split_set="train")
-            self.dev_dataset = SquadQGDataset(split_set="dev")
+            if args.run_test != True:
+                self.train_dataset = SquadQGDataset(split_set="train")
+                self.dev_dataset = SquadQGDataset(split_set="dev")
             self.test_dataset = SquadQGDataset(split_set="test", is_test=True)
         elif args.data_type == "race":
-            self.train_dataset = RaceQGDataset(split_set="train")
-            self.dev_dataset = RaceQGDataset(split_set="dev")
+            if args.run_test != True:
+                self.train_dataset = RaceQGDataset(split_set="train")
+                self.dev_dataset = RaceQGDataset(split_set="dev")
             self.test_dataset = RaceQGDataset(split_set="test", is_test=True)
         elif args.data_type == "drcd":
-            self.train_dataset = DrcdQGDataset(split_set="train")
-            self.dev_dataset = DrcdQGDataset(split_set="dev")
+            if args.run_test != True:
+                self.train_dataset = DrcdQGDataset(split_set="train")
+                self.dev_dataset = DrcdQGDataset(split_set="dev")
             self.test_dataset = DrcdQGDataset(split_set="test", is_test=True)
 
     def train_dataloader(self):
@@ -117,16 +120,18 @@ class SquadQGDataset(Dataset, DatasetUtilsMixin):
         answer_text = data["answers"][0]["text"]
         answer_len = len(answer_text)
         answer_start = data["answers"][0]["answer_start"]
-        hl_context = (
-            data["context"][:answer_start]
-            + HL_TOKEN
-            + answer_text
-            + HL_TOKEN
-            + data["context"][answer_start + answer_len :]
-        )
+        # hl_context = (
+        #     data["context"][:answer_start]
+        #     + HL_TOKEN
+        #     + answer_text
+        #     + HL_TOKEN
+        #     + data["context"][answer_start + answer_len :]
+        # )
+        context = data["context"] + " " + self.tokenizer.sep_token + " " + answer_text
+
         if self.is_test == False:
             model_input = self.prepare_input(
-                context=hl_context, label=data["question"] + self.tokenizer.eos_token
+                context=context, label=data["question"] + self.tokenizer.eos_token
             )
             return (
                 model_input["input_ids"],
@@ -134,7 +139,7 @@ class SquadQGDataset(Dataset, DatasetUtilsMixin):
                 model_input["labels"],
             )
         else:
-            model_input = self.prepare_input(context=hl_context)
+            model_input = self.prepare_input(context=context)
             return (
                 model_input["input_ids"],
                 model_input["attention_mask"],
@@ -254,6 +259,8 @@ class DrcdQGDataset(Dataset, DatasetUtilsMixin):
             + HL_TOKEN
             + data["context"][answer_start + answer_len :]
         )
+        # context = data["context"] + self.tokenizer.sep_token + answer_text
+
         if self.is_test == False:
             model_input = self.prepare_input(
                 context=hl_context, label=data["question"] + self.tokenizer.eos_token

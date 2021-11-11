@@ -1,4 +1,4 @@
-from os import truncate
+import os
 import pytorch_lightning as pl
 from models.seq2seq_lm import argparser
 from models.seq2seq_lm.model import Model
@@ -25,45 +25,63 @@ if __name__ == "__main__":
         model.run_server()
         exit()
 
-    # init wandb
-    wandb_logger = WandbLogger(
-        project=args.task_name,
-        name="{0}_{1}_{2}_{3}".format(
-            args.model_name_or_path,
-            args.data_type,
-            str(args.max_input_length),
-            str(args.max_output_length),
-        ),
-    )
-
-    # trainer config
-    trainer = pl.Trainer(
-        gpus=GPUS,
-        accelerator=ACCELERATOR,
-        fast_dev_run=args.dev,
-        precision=32,
-        default_root_dir=args.output_dir,
-        max_epochs=args.epoch,
-        logger=wandb_logger,
-        log_every_n_steps=args.wandb_logging_steps,
-        callbacks=[
-            EarlyStopping(monitor="dev_loss", patience=5, mode="min"),
-            ModelCheckpoint(
-                monitor="dev_loss",
-                filename="{epoch}-{dev_loss:.2f}",
-                save_top_k=args.epoch,
-                mode="min",
-            ),
-        ],
-    )
-
     # DataModule
     dm = DataModule()
 
-    # train
     if args.run_test == False:
+        # create output_dir
+        if not (os.path.exists(args.output_dir)):
+            os.makedirs(args.output_dir)
+
+        # init wandb
+        wandb_logger = WandbLogger(
+            project=args.task_name,
+            save_dir=args.output_dir,
+            name="{0}_{1}_{2}_{3}".format(
+                args.model_name_or_path,
+                args.data_type,
+                str(args.max_input_length),
+                str(args.max_output_length),
+            ),
+        )
+
+        # trainer config
+        trainer = pl.Trainer(
+            gpus=GPUS,
+            accelerator=ACCELERATOR,
+            fast_dev_run=args.dev,
+            precision=32,
+            default_root_dir=args.output_dir,
+            max_epochs=args.epoch,
+            logger=[wandb_logger],
+            log_every_n_steps=args.wandb_logging_steps,
+            callbacks=[
+                # EarlyStopping(monitor="dev_loss", patience=5, mode="min"),
+                ModelCheckpoint(
+                    monitor="dev_loss",
+                    dirpath=args.output_dir,
+                    filename="{epoch:02d}-{dev_loss:.2f}",
+                    save_top_k=args.epoch,
+                    mode="min",
+                ),
+            ],
+        )
+
+        wandb_logger.watch(model)
+
+        # train
         logger.info(f"Run Training!")
         trainer.fit(model, datamodule=dm)
+    else:
+        trainer = pl.Trainer(
+            gpus=GPUS,
+            accelerator=ACCELERATOR,
+            precision=32,
+            default_root_dir=os.path.join(
+                args.output_dir, args.from_checkpoint.split("/")[-1]
+            ),
+            logger=False,
+        )
 
     if args.dev == 0:
         # decide which checkpoint to use
@@ -85,5 +103,5 @@ if __name__ == "__main__":
             datamodule=dm,
             ckpt_path=testing_use_model_path,
         )
-        
+
     wandb.finish()

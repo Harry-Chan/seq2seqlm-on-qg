@@ -78,23 +78,9 @@ class ModelEvalMixin:
                 "a",
                 encoding="utf-8",
             ) as log_f:
-                # replace string: 台灣哪一行政區的月均最高與最低氣溫相差21.2度？ -> 台 灣 哪 一 行 政 區 的 月 均 最 高 與 最 低 氣 溫 相 差 21.2 度 ？
-                pattern = re.compile(u"[\u4e00-\u9fa5]+")
-                rewrite_question = ""
-                preflag = False
-                for c in decode_question:
-                    if pattern.search(c) == None and preflag == True:
-                        preflag = True
-                        rewrite_question += c
-                    elif pattern.search(c) == None:
-                        preflag = True
-                        rewrite_question += " " + c
-                    elif c == "？":
-                        rewrite_question += " " + c
-                    else:
-                        preflag = False
-                        rewrite_question += " " + c
-                log_f.write(rewrite_question + "\n")
+                # replace string: 東 湧 燈 塔 是 由 哪 一 國 人 所 設 計 的? -> 東 湧 燈 塔 是 由 哪 一 國 人 所 設 計 的 ？
+                decode_question = decode_question.replace("?", " ？")
+                log_f.write(decode_question + "\n")
 
     def evaluate_predict(self, data_type):
 
@@ -121,7 +107,7 @@ class ModelEvalMixin:
         nlg_predict_score_out_path = os.path.join(log_dir, "nlg-eval_scorer.txt")
         if data_type == "squad":
             os.system(
-                "nlg-eval --references=data/squad_v1.1/nqg_tgt-test.txt  --hypothesis=%s  --no-skipthoughts  --no-glove  >> %s"
+                "nlg-eval --references=data/squad_nqg/nqg_tgt-test.txt  --hypothesis=%s  --no-skipthoughts  --no-glove  >> %s"
                 % (nlg_predict_file_path, nlg_predict_score_out_path)
             )
         elif data_type == "race":
@@ -150,7 +136,7 @@ class ModelEvalMixin:
                 "python nqg/qgevalcap/eval.py --src data/race_eqg/race_test_q.txt --tgt data/race_eqg/race_test_q.txt --out %s >> %s"
                 % (nqg_predict_file_path, nqg_predict_score_out_path)
             )
-        elif data_type == "race":
+        elif data_type == "drcd":
             os.system(
                 "python nqg/qgevalcap/eval.py --src data/drcd/drcd_test_q.txt --tgt data/drcd/drcd_test_q.txt --out %s >> %s"
                 % (nqg_predict_file_path, nqg_predict_score_out_path)
