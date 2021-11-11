@@ -1,4 +1,4 @@
-# Two-Stage-Question-Generation
+# Seq2seq-On-Question-Generation
 ## Training
 
 ### Seq2Seq QG
