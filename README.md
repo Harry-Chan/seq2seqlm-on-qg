@@ -76,7 +76,7 @@ python3 train_seq2seq_lm.py \
 ```
 python3 train_seq2seq_lm.py \
   --model_name_or_path uer/bart-base-chinese-cluecorpussmall \
-  --data_type race \
+  --data_type drcd \
   --task_name  seq2seq_QG \
   --predict_file data/drcd/test.json \
   --output_dir drcd_QG_seq2seq \
