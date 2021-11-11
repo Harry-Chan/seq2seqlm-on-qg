@@ -54,7 +54,7 @@ python3 train_seq2seq_lm.py \
   --model_name_or_path facebook/bart-base \
   --data_type squad \
   --task_name seq2seq_QG \
-  --predict_file data/race_eqg/test_keywords.json \
+  --predict_file data/squad_nqg/test_keywords.json \
   --output_dir squad_QG_seq2seq \
   --run_test \
   --from_checkpoint squad_QG_seq2seq/checkpoint/
@@ -78,7 +78,7 @@ python3 train_seq2seq_lm.py \
   --model_name_or_path uer/bart-base-chinese-cluecorpussmall \
   --data_type race \
   --task_name  seq2seq_QG \
-  --predict_file data/race_eqg/test_keywords.json \
+  --predict_file data/drcd/test.json \
   --output_dir drcd_QG_seq2seq \
   --run_test \
   --from_checkpoint drcd_QG_seq2seq/checkpoint/
