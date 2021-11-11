@@ -59,7 +59,7 @@ if __name__ == "__main__":
                 # EarlyStopping(monitor="dev_loss", patience=5, mode="min"),
                 ModelCheckpoint(
                     monitor="dev_loss",
-                    dirpath=args.output_dir,
+                    dirpath=os.path.join(args.output_dir, "checkpoints"),
                     filename="{epoch:02d}-{dev_loss:.2f}",
                     save_top_k=args.epoch,
                     mode="min",
