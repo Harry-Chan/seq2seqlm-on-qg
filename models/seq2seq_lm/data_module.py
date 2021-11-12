@@ -120,18 +120,19 @@ class SquadQGDataset(Dataset, DatasetUtilsMixin):
         answer_text = data["answers"][0]["text"]
         answer_len = len(answer_text)
         answer_start = data["answers"][0]["answer_start"]
-        # hl_context = (
-        #     data["context"][:answer_start]
-        #     + HL_TOKEN
-        #     + answer_text
-        #     + HL_TOKEN
-        #     + data["context"][answer_start + answer_len :]
-        # )
-        context = data["context"] + " " + self.tokenizer.sep_token + " " + answer_text
-
+        hl_context = (
+            data["context"][:answer_start]
+            + HL_TOKEN
+            + " "
+            + answer_text
+            + " "
+            + HL_TOKEN
+            + data["context"][answer_start + answer_len :]
+        )
+        # context = data["context"] + " " + self.tokenizer.sep_token + " " + answer_text
         if self.is_test == False:
             model_input = self.prepare_input(
-                context=context, label=data["question"] + self.tokenizer.eos_token
+                context=hl_context, label=data["question"] + self.tokenizer.eos_token
             )
             return (
                 model_input["input_ids"],
@@ -139,7 +140,7 @@ class SquadQGDataset(Dataset, DatasetUtilsMixin):
                 model_input["labels"],
             )
         else:
-            model_input = self.prepare_input(context=context)
+            model_input = self.prepare_input(context=hl_context)
             return (
                 model_input["input_ids"],
                 model_input["attention_mask"],
