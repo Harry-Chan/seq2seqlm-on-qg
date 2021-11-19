@@ -250,9 +250,9 @@ class DrcdQGDataset(Dataset, DatasetUtilsMixin):
     def __getitem__(self, index):
         data = self.data[index]
 
-        answer_text = data["answers"]
+        answer_text = data["answers"][0]["text"]
         answer_len = len(answer_text)
-        answer_start = data["answer_start"]
+        answer_start = data["answers"][0]["answer_start"]
         hl_context = (
             data["context"][:answer_start]
             + HL_TOKEN
