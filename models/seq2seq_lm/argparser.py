@@ -14,6 +14,7 @@ def get_args():
             "t5-large",
             "fnlp/bart-base-chinese",
             "uer/bart-base-chinese-cluecorpussmall",
+            "voidful/bart-base-chinese",
         ],
         type=str,
     )
