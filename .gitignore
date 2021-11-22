@@ -1,0 +1,5 @@
+wandb/
+*.cache
+models/seq2seq_lm/__pycache__/
+*QG_seq2seq*/
+*QG_NHL_seq2seq*/
