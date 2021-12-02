@@ -148,6 +148,7 @@ class ModelEvalMixin:
         #         "nlg-eval --references=data/drcd/drcd_test_q.txt  --hypothesis=%s  --no-skipthoughts  --no-glove >> %s"
         #         % (nlg_predict_file_path, nlg_predict_score_out_path)
         #     )
+        
         # nqg scorer
         assert os.path.isdir(
             "nqg"
