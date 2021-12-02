@@ -141,14 +141,33 @@ Model                                                                  |Bleu 1|B
 BERT-HLSQG [(Chan, et al.)](https://www.aclweb.org/anthology/D19-5821/) |49.73 |34.60 |26.13 |20.33 |23.88 |48.23  |
 BART-HLQG                                                             |56.57 |40.25 |30.62 |23.88 |25.64 |51.68  |
 
+```
+python nqg/qgevalcap/eval.py \
+  --src data/squad_nqg/src-test.txt \
+  --tgt data/squad_nqg/tgt-test.txt \
+  --out data/outputs/BART_HLQG_predict_squad.txt
+```
 
 ### DRCD
 Model                                                                  |Bleu 1|Bleu 2|Bleu 3|Bleu 4|METEOR|ROUGE-L|
 -----------------------------------------------------------------------|------|------|------|------|------|-------|
 BART-HLQG                                                              |55.26 |45.85 |39.35 |34.36 |28.45 |50.38  |
 
+```
+python nqg/qgevalcap/eval.py \
+  --src data/drcd/src-test.txt \
+  --tgt data/drcd/tgt-test.txt \
+  --out data/outputs/BART_HLQG_predict_drcd.txt
+```
 ### RACE EQG
 Model                                                                  |Bleu 1|Bleu 2|Bleu 3|Bleu 4|METEOR|ROUGE-L|
 -----------------------------------------------------------------------|------|------|------|------|------|-------|
 Unified model + ELMo [(Xin, et al)](https://arxiv.org/abs/2012.06106)  |35.10 |21.08 |15.19 |11.96 |14.94 |34.24  |
 BART-QG                                                                |46.73 |32.74 |25.20 |20.18 |22.58 |47.23  |
+
+```
+python nqg/qgevalcap/eval.py \
+  --src data/race_eqg/src-test.txt \
+  --tgt data/race_eqg/tgt-test.txt \
+  --out data/outputs/BART_QG_predict_race.txt
+```
