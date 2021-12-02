@@ -5,7 +5,7 @@ Use Seq2seqLM (BART) on Question  Generation Task
 We report three dataset on two training strategy
 
 ### Highlight Training Strategy and Extract-based QA Dataset (The answer is a span in context)
-The model input sequence X of the "Highlight Training Strategy" is as follows
+The model input sequence `X` of the "Highlight Training Strategy" is as follows
 ```
 X = [c1, c2, ..., [HL], a1, ..., a|A|, [HL], ..., c|C|]
 ```
@@ -22,7 +22,7 @@ X = [c1, c2, ..., [HL], a1, ..., a|A|, [HL], ..., c|C|]
 > [DRCD: a Chinese Machine Reading Comprehension Dataset](https://arxiv.org/abs/1806.00920)
 
 ### Naive Training Strategy and Abstract-based QA Dataset
-The model input sequence X of the "Naive Training Strategy" is as follows
+The model input sequence `X` of the "Naive Training Strategy" is as follows
 ```
 X = [c1, c2, ..., c|C|, [SEP], a1, ..., a|A|]
 ```
@@ -147,7 +147,7 @@ Model                                                                  |Bleu 1|B
 -----------------------------------------------------------------------|------|------|------|------|------|-------|
 BART-HLQG                                                              |55.26 |45.85 |39.35 |34.36 |28.45 |50.38  |
 
-### RACE
+### RACE EQG
 Model                                                                  |Bleu 1|Bleu 2|Bleu 3|Bleu 4|METEOR|ROUGE-L|
 -----------------------------------------------------------------------|------|------|------|------|------|-------|
 Unified model + ELMo [(Xin, et al)](https://arxiv.org/abs/2012.06106)  |35.10 |21.08 |15.19 |11.96 |14.94 |34.24  |
