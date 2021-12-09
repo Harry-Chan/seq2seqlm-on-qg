@@ -132,7 +132,7 @@ python train_seq2seq_lm.py \
 ## Expriments
 We report score with [NQG Scorer](https://github.com/xinyadu/nqg) which is using in SQuAD NQG
 
-Default all model (BART-HLQG and BART-QG) sizes are "base"
+Default BART-HLQG and BART-QG sizes are "base"
 
 
 ### SQuAD NQG
