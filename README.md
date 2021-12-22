@@ -99,7 +99,7 @@ python train_seq2seq_lm.py \
   --predict_file data/squad_nqg/test.json \
   --output_dir squad_QG_seq2seq \
   --run_test \
-  --from_checkpoint squad_QG_seq2seq/checkpoint/
+  --from_checkpoint squad_QG_seq2seq/checkpoint/{model_dir}
 ```
 
 
@@ -112,7 +112,7 @@ python train_seq2seq_lm.py \
   --predict_file data/drcd/test.json \
   --output_dir drcd_QG_seq2seq \
   --run_test \
-  --from_checkpoint drcd_QG_seq2seq/checkpoint/
+  --from_checkpoint drcd_QG_seq2seq/checkpoint/{model_dir}
 ```
 
 
@@ -125,7 +125,7 @@ python train_seq2seq_lm.py \
   --predict_file data/race_eqg/test.json \
   --output_dir race_QG_seq2seq \
   --run_test \
-  --from_checkpoint race_QG_seq2seq/checkpoint/
+  --from_checkpoint race_QG_seq2seq/checkpoint/{model_dir}
 ```
 
 
