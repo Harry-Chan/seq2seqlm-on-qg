@@ -1,8 +1,7 @@
-transformers
+transformers==4.16.2
 datasets 
 accelerate
-pytorch-lightning
+pytorch-lightning==1.4.9
 wandb
 stanza
-# git+https://github.com/Maluuba/nlg-eval.git@master
 loguru
