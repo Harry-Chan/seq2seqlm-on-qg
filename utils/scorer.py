@@ -1,4 +1,3 @@
-from nlgeval import NLGEval
 from collections import defaultdict
 import os
 import stanza
@@ -10,9 +9,6 @@ import string
 class ModelEvalMixin:
     def __init__(self, preprocess=True):
         self.preprocess = preprocess
-        self.nlgeval = NLGEval(
-            no_glove=True, no_skipthoughts=True, metrics_to_omit=["CIDEr"]
-        )
         self.score = defaultdict(lambda: 0.0)
         self.len = 0
         if self.preprocess:
@@ -107,7 +103,6 @@ class ModelEvalMixin:
                             or decode_question[i + 1] in punc
                         ):
                             rewrite_question += " "
-                print(rewrite_question.strip())
                 log_f.write(rewrite_question.strip() + "\n")
 
     def evaluate_predict(self, data_type):
@@ -118,37 +113,6 @@ class ModelEvalMixin:
             else self.trainer.log_dir
         )
 
-        # load predict and add score
-        # with open(
-        #     os.path.join(log_dir, "predict.jsonl"), "r", encoding="utf-8"
-        # ) as log_f:
-        #     lines = log_f.readlines()
-        #     for i, line in enumerate(lines):
-        #         line = json.loads(line)
-        #         hyp = line["hyp"]
-        #         ref = line["ref"]
-        #         scorer.add(hyp, [ref])
-        #     scorer.compute(save_score_report_path=log_dir)
-
-        # nlg-eval scorer
-        # nlg_predict_file_path = os.path.join(log_dir, "predict_for_scorer.txt")
-        # nlg_predict_score_out_path = os.path.join(log_dir, "nlg-eval_scorer.txt")
-        # if data_type == "squad":
-        #     os.system(
-        #         "nlg-eval --references=data/squad_nqg/nqg_tgt-test.txt  --hypothesis=%s  --no-skipthoughts  --no-glove  >> %s"
-        #         % (nlg_predict_file_path, nlg_predict_score_out_path)
-        #     )
-        # elif data_type == "race":
-        #     os.system(
-        #         "nlg-eval --references=data/race_eqg/race_test_q.txt  --hypothesis=%s  --no-skipthoughts  --no-glove >> %s"
-        #         % (nlg_predict_file_path, nlg_predict_score_out_path)
-        #     )
-        # elif data_type == "drcd":
-        #     os.system(
-        #         "nlg-eval --references=data/drcd/drcd_test_q.txt  --hypothesis=%s  --no-skipthoughts  --no-glove >> %s"
-        #         % (nlg_predict_file_path, nlg_predict_score_out_path)
-        #     )
-        
         # nqg scorer
         assert os.path.isdir(
             "nqg"
@@ -182,39 +146,3 @@ class ModelEvalMixin:
         os.makedirs(log_dir, exist_ok=True)
         self.model.save_pretrained(log_dir)
         self.tokenizer.save_pretrained(log_dir)
-
-    # def _preprocess(self, raw_sentence):
-    #     result = self.nlp(raw_sentence.replace("\n\n", ""))
-    #     tokens = []
-    #     try:
-    #         for token in result.sentences[0].tokens:
-    #             tokens.append(token.text.lower())
-    #             tokenize_sentence = " ".join(tokens)
-    #     except:
-    #         print('_preprocess fail, return ""\n', raw_sentence, result)
-    #         return ""
-    #     return tokenize_sentence
-
-    # def add(self, hyp, refs):
-    #     refs = refs[:]
-    #     if self.preprocess:
-    #         hyp = self._preprocess(hyp)
-    #         refs = [self._preprocess(ref) for ref in refs]
-    #         print(hyp, refs)
-    #     score = self.nlgeval.compute_individual_metrics(hyp=hyp, ref=refs)
-    #     for score_key in score.keys():
-    #         self.score[score_key] += score[score_key]
-    #     self.len += 1
-
-    # def compute(self, save_score_report_path=None):
-    #     if save_score_report_path is not None:
-    #         os.makedirs(save_score_report_path, exist_ok=True)
-    #         score_f = open(
-    #             os.path.join(save_score_report_path, "our_scorer.txt"),
-    #             "w",
-    #             encoding="utf-8",
-    #         )
-    #     for score_key in self.score.keys():
-    #         _score = self.score[score_key] / self.len
-    #         if save_score_report_path is not None:
-    #             score_f.write("%s\t%3.5f\n" % (score_key, _score))
